@@ -7,6 +7,30 @@ import { AppliModel } from "../../models/formSubmission";
 import { upload } from "../../utils/fileUploader";
 import { environment, apiUrl } from "../../utils/secretkeys";
 
+export const getFieldDataFromMaster = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { field, id } = req.params;
+    const master = await MasterModel.findOne({schoolId:id});
+
+    if (!master) {
+      return res
+        .status(404)
+        .json(createError(404, "error", "master not found"));
+    }
+
+    const fieldData = master[field as keyof Master];
+
+    res.status(200).json(createResponse("field data", fieldData));
+  } catch (error) {
+    res.status(500).json(createError(500, "error", " internal server error"));
+  }
+}
+
+
 export const addToMaster = async (req: CustomRequest, res: Response) => {
   try {
     const { field, data } = req.body;
@@ -56,6 +80,7 @@ export const addToMaster = async (req: CustomRequest, res: Response) => {
         .json(createError(404, "error", "master not found"));
     }
     let fieldArray = master[field as keyof Master] as unknown as any[];
+
     if (Array.isArray(fieldArray)) {
       if (field === "uploadInstruction") {
         let modifiedData = JSON.parse(data);
@@ -183,7 +208,7 @@ export const deleteFieldInMaster = async (
       return res.status(400).json(createError(400, "error", "invalid field"));
     }
 
-    const updatedMaster = await MasterModel.updateOne(
+    const updatedMaster = await MasterModel.findOneAndUpdate(
       {
         _id: masterId,
       },

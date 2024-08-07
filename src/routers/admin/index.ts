@@ -1,13 +1,13 @@
 import express from "express";
 import { addAdmin, addNewConfig, addNewRole, allocateRoleMenu, allocateRoleToAdmin, deleteAdmin, updatePass } from "../../controllers/admin/adminAction";
 import { authenticateUser } from "../../middlewares/auth";
-import { addToMaster, deleteFieldInMaster, updateMaster, uploadInstrt } from "../../controllers/forms/masterController";
+import { addToMaster, deleteFieldInMaster, getFieldDataFromMaster, updateMaster, uploadInstrt } from "../../controllers/forms/masterController";
 import { getControls, getAllAdmins, getDashboard } from "../../controllers/admin/data";
-import { addFieldsToConfig, addToConfig, deleteFieldInConfig, updateConfig } from "../../controllers/forms/configController";
+import { addFieldsToConfig, addToConfig, deleteFieldInConfig, getFieldDataFromConfig, updateConfig } from "../../controllers/forms/configController";
 import { getUserData } from "../../controllers/student/index";
-import { addToQExamConfig, deleteQExamConfig, updateQExamConfig } from "../../controllers/forms/qualifyingExamController";
-import { addToSubject, updateSubConfig } from "../../controllers/forms/subjectController";
-import { addToEnCOnfig, updateEntConfig } from "../../controllers/forms/entranceExamCtler";
+import { addToQExamConfig, deleteQExamConfig, getFieldDataFromQualifyingExam, updateQExamConfig } from "../../controllers/forms/qualifyingExamController";
+import { addToSubject, getFieldDataFromSubConfig, updateSubConfig } from "../../controllers/forms/subjectController";
+import { addToEnCOnfig, getFieldDataFromEntranceConfig, updateEntConfig } from "../../controllers/forms/entranceExamCtler";
 
 const adminActionRouter=express.Router()
 
@@ -33,25 +33,30 @@ adminActionRouter.get("/:schoolId/dashboard",authenticateUser(false),getDashboar
 
 // for master
 adminActionRouter.post("/master/:id/add",authenticateUser(false),uploadInstrt,addToMaster)
+adminActionRouter.post("/master/:id/:field",authenticateUser(false),getFieldDataFromMaster)
 adminActionRouter.post("/master/:masterId/:field/:subId/update",authenticateUser(false),uploadInstrt,updateMaster)
 adminActionRouter.delete("/master/:masterId/:field/:subId/delete",authenticateUser(false),deleteFieldInMaster)
 
 
 adminActionRouter.post("/qexam/:id/add",authenticateUser(false),addToQExamConfig)
+adminActionRouter.post("/qexam/:id/:field",authenticateUser(false),getFieldDataFromQualifyingExam)
 adminActionRouter.post("/qexam/:qexamId/:field/:subId/update",authenticateUser(false),updateQExamConfig)
 adminActionRouter.delete("/qexam/:qexamId/:field/:subId/delete",authenticateUser(false),deleteQExamConfig)
 adminActionRouter.post("/add",addNewConfig)
 
 
 adminActionRouter.post("/config/:id/add",authenticateUser(false),addToConfig)
+adminActionRouter.post("/config/:id/:field",authenticateUser(false),getFieldDataFromConfig)
 adminActionRouter.post("/config/:id/addField",authenticateUser(false),addFieldsToConfig)
 adminActionRouter.post("/config/:configId/:field/:subId/update",authenticateUser(false),updateConfig)
 adminActionRouter.delete("/config/:configId/:field/:subId/delete",authenticateUser(false),deleteFieldInConfig)
 
 adminActionRouter.post("/subconfig/:id/add",authenticateUser(false),addToSubject)
+adminActionRouter.post("/subconfig/:id/:field",authenticateUser(false),getFieldDataFromSubConfig)
 adminActionRouter.post("/subconfig/:subconfigId/:field/:subId/update",authenticateUser(false),updateSubConfig)
 
 adminActionRouter.post("/entconfig/:id/add",authenticateUser(false),addToEnCOnfig)
+adminActionRouter.post("/entconfig/:id/:field",authenticateUser(false),getFieldDataFromEntranceConfig)
 adminActionRouter.post("/entconfig/:entconfigId/:field/:subId/update",authenticateUser(false),updateEntConfig)
 // adminActionRouter.delete("/subconfig/:subconfigId/:field/:subId/delete",authenticateUser(false),deleteQExamConfig)
 

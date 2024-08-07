@@ -3,6 +3,29 @@ import { createError, createResponse } from "../../utils/response-handler";
 import { Config, ConfigModel } from "../../models/configuration";
 import mongoose from "mongoose";
 
+export const getFieldDataFromConfig = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { field, id } = req.params;
+    const config = await ConfigModel.findOne({schoolId:id});
+
+    if (!config) {
+      return res
+        .status(404)
+        .json(createError(404, "error", "master not found"));
+    }
+
+    const fieldData = config[field as keyof Config];
+
+    res.status(200).json(createResponse("field data", fieldData));
+  } catch (error) {
+    res.status(500).json(createError(500, "error", " internal server error"));
+  }
+}
+
 // adding fields to configuration
 export const addToConfig = async (
   req: Request,

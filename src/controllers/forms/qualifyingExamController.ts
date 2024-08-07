@@ -1,9 +1,32 @@
 import { NextFunction, Request,Response } from "express";
 import { createError, createResponse } from "../../utils/response-handler";
 import { QExamModel, QualifyingExamConfig } from "../../models/qualifying-exam";
+import { QualifyingExam } from "src/utils/qualifyingExam-interfaces";
 
 
-
+export const getFieldDataFromQualifyingExam = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { field, id } = req.params;
+      const config = await QExamModel.findOne({schoolId:id});
+  
+      if (!config) {
+        return res
+          .status(404)
+          .json(createError(404, "error", "master not found"));
+      }
+  
+      const fieldData = config[field as keyof QualifyingExamConfig];
+  
+      res.status(200).json(createResponse("field data", fieldData));
+    } catch (error) {
+      res.status(500).json(createError(500, "error", " internal server error"));
+    }
+  }
+  
 export const addToQExamConfig=async (req:Request,res:Response,next:NextFunction)=>{
     try {
         const { field, data } = req.body;

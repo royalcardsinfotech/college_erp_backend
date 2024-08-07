@@ -4,7 +4,28 @@ import { CustomRequest } from "../../utils/customrequest";
 import { createError, createResponse } from "../../utils/response-handler";
 import { SubModel, SubjectConfig } from "../../models/subject";
 
+export const getFieldDataFromSubConfig = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { field, id } = req.params;
+    const sub = await SubModel.findOne({schoolId:id});
 
+    if (!sub) {
+      return res
+        .status(404)
+        .json(createError(404, "error", "master not found"));
+    }
+
+    const fieldData = sub[field as keyof SubjectConfig];
+
+    res.status(200).json(createResponse("field data", fieldData));
+  } catch (error) {
+    res.status(500).json(createError(500, "error", " internal server error"));
+  }
+}
 
 
 // adding to subject configuration
