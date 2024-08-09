@@ -206,15 +206,14 @@ export const addNewRole=async (req:Request,res:Response)=>{
 
 export const updateRole=async (req:Request,res:Response)=>{
     try {
-        const {description,role_code}=req.body
-        const role=await RoleModel.findOne
-        ({
-            role_code:role_code,
-        })
+        const {description,role_code,active,_id}=req.body
+        const role=await RoleModel.findById(_id)
         if(!role){
             return res.status(400).json(createError(400,"error","role with this role code does not exits"))
         }
+        role!.role_code=role_code
         role!.description=description
+        role!.active=active
         await role!.save()
         res.status(200).json(createResponse("success",role))
     }
